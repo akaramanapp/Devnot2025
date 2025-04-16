@@ -1,0 +1,119 @@
+{
+  "name": "Trip Planner",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "b45a90d7-f432-4d47-ac79-790ad51b98bc",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "2229e0cb-0053-448f-900b-f43423d4863e",
+      "name": "Webhook",
+      "webhookId": "b45a90d7-f432-4d47-ac79-790ad51b98bc"
+    },
+    {
+      "parameters": {
+        "agent": "conversationalAgent",
+        "promptType": "define",
+        "text": "={{ $json.body.places }} şehirlerine seyahat edeceğim. Her şehir için, mutlaka görülmesi gereken 5 önemli yeri seçmeni istiyorum. Bu yerler tarihi, kültürel veya doğal öneme sahip olabilir. Her bir yerin adı ve o yer hakkında 100 ila 150 karakter arasında kısa, bilgilendirici bir açıklama vermelisin.\n\nYanıtını aşağıdaki JSON formatında ver:\n\n[\n  {\n    \"city\": \"Şehir Adı\",\n    \"places\": [\n      {\n        \"placeName\": \"Yer Adı\",\n        \"placeInfo\": \"100-150 karakter uzunluğunda bilgi.\"\n      },\n      ...\n    ]\n  },\n  ...\n]",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        220,
+        0
+      ],
+      "id": "e178df12-f40b-4790-9737-1435d4689c83",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        240,
+        220
+      ],
+      "id": "824a5450-10e6-4844-8f37-b5c6964559a1",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "mEwlfOLnkc4F6oUO",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        580,
+        0
+      ],
+      "id": "94a731ff-3714-4c9b-9d07-4d13f788f687",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e944cc60-c3d4-425a-9022-6bc99d5289ff",
+  "meta": {
+    "instanceId": "fdd5b7107aaf62d0cad81e7f3e87812436c1fe09906f06f8ef6606d80be0a7ab"
+  },
+  "id": "oO0XhCQF6UZ0PogA",
+  "tags": []
+}

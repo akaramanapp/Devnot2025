@@ -1,0 +1,136 @@
+{
+  "name": "Save Receipt",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "text": "Bu bir fatura gorselidir. Bu faturanin icindeki toplam tutari ve tarihi bul. \n\nDonus formatin su sekilde olsun: { \"tutar\": \"400 TL\", \"tarih\": \"29.12.2005\" }\n",
+        "inputType": "base64",
+        "options": {
+          "detail": "low"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.7,
+      "position": [
+        440,
+        0
+      ],
+      "id": "d3c88fc7-8205-44a3-a270-1a0e1d027c4f",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "mEwlfOLnkc4F6oUO",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b702a5b0-a219-4f2d-a693-5375174a69bb",
+              "name": "data",
+              "value": "={{ JSON.parse($json.content) }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        660,
+        0
+      ],
+      "id": "4cd11e21-6d16-4957-a687-b3c5eb4f43b3",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ab2c9995-ae98-4e60-9c24-2732d83cbaaf",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "c52a5b40-3df1-4386-96e6-fcb953a95319",
+      "name": "Webhook",
+      "webhookId": "ab2c9995-ae98-4e60-9c24-2732d83cbaaf"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        900,
+        0
+      ],
+      "id": "495c9f23-acdc-4304-b5e8-bad980ee01c0",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6715aa94-5347-407f-8fa0-cfe88375bff0",
+  "meta": {
+    "instanceId": "fdd5b7107aaf62d0cad81e7f3e87812436c1fe09906f06f8ef6606d80be0a7ab"
+  },
+  "id": "WXqm3Nrfyy5sRhru",
+  "tags": []
+}
